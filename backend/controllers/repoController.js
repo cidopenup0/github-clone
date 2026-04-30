@@ -77,19 +77,18 @@ async function fetchRepositoryByName(req, res) {
 }
 
 async function fetchRepositoryForCurrentUser(req, res) {
-  const userID = req.user;
+  const userID = req.params.userID;
+
+  if (!mongoose.Types.ObjectId.isValid(userID)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
 
   try {
     const repositories = await Repository.find({ owner: userID })
       .populate("owner")
       .populate("issues");
 
-    if (!repositories || repositories.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No repositories found for the user" });
-    }
-    res.json({ message: "Repositories found", repositories });
+    res.json({ repositories });
   } catch (error) {
     console.error("Error fetching user repository:", error);
     res.status(500).send({ message: "Internal server error" });

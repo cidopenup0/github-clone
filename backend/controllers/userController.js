@@ -50,7 +50,7 @@ async function signup(req, res) {
       },
     );
 
-    res.json({ token });
+    res.json({ token, userId: result.insertedId });
   } catch (error) {
     console.error("Error during signup:", error.message);
     res.status(500).send("Internal server error");
